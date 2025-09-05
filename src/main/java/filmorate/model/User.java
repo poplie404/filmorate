@@ -3,11 +3,15 @@ package filmorate.model;
 import lombok.Data;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User {
 
     private int id;
+    private Set<Integer> friends = new HashSet<>();
+
 
     @NotBlank(message = "Email не может быть пустым")
     @Email(message = "Некорректный формат email")

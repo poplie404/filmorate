@@ -1,46 +1,64 @@
 package filmorate.controllers;
 
 import filmorate.model.Film;
+import filmorate.service.FilmService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
-
-import java.util.*;
+import java.util.Collection;
 
 @RestController
 @RequestMapping("/films")
 public class FilmController {
 
     private final static Logger log = LoggerFactory.getLogger(FilmController.class);
-    private final Map<Integer, Film> films = new HashMap<>();
+    private final FilmService filmService;
+
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping
     public Collection<Film> getFilms() {
-        log.info("Получен список фильмов: {} шт.", films.size());
-        return films.values();
+        log.info("Запрос списка фильмов");
+        return filmService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilm(@PathVariable int id) {
+        log.info("Запрос фильма по id={}", id);
+        return filmService.getById(id);
     }
 
     @PostMapping
-    public Film postFilms(@Valid @RequestBody Film film) {
-        film.setId(getNextId());
-        films.put(film.getId(), film);
-        log.info("Фильм добавлен: {}", film);
-        return film;
+    public Film postFilm(@Valid @RequestBody Film film) {
+        log.info("Добавление фильма: {}", film);
+        return filmService.add(film);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
-        if (!films.containsKey(film.getId())) {
-            throw new NoSuchElementException("Фильм с ID " + film.getId() + " не найден");
-        }
-        films.put(film.getId(), film);
-        log.info("Фильм обновлён: {}", film);
-        return film;
+    public Film updateFilm(@Valid @RequestBody Film film) {
+        log.info("Обновление фильма: {}", film);
+        return filmService.update(film);
     }
 
-    private int getNextId() {
-        return films.keySet().stream().mapToInt(i -> i).max().orElse(0) + 1;
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable int id, @PathVariable int userId) {
+        log.info("Пользователь {} ставит лайк фильму {}", userId, id);
+        filmService.addLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable int id, @PathVariable int userId) {
+        log.info("Пользователь {} убирает лайк у фильма {}", userId, id);
+        filmService.removeLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
+        log.info("Запрос популярных фильмов (top={})", count);
+        return filmService.getMostPopular(count);
     }
 }
