@@ -4,7 +4,7 @@ import filmorate.model.Film;
 
 import java.util.Collection;
 
-public interface FilmStorage {
+interface FilmStorage {
     public Film add(Film film);
 
     public Film update(Film film);

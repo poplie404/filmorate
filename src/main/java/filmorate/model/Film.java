@@ -11,7 +11,6 @@ import java.util.Set;
 public class Film {
 
     private int id;
-    private Set<Integer> likes = new HashSet<>();
 
     @NotBlank(message = "Имя фильма не может быть пустым")
     private String name;
@@ -20,9 +19,11 @@ public class Film {
     private String description;
 
     @NotNull(message = "Дата релиза не может быть пустой")
-    @ReleaseDateAfter // кастомная аннотация, проверяющая дату >= 28.12.1895
+    @ReleaseDateAfter
     private LocalDate releaseDate;
 
     @Positive(message = "Продолжительность должна быть положительным числом")
     private int duration;
+
+    private Set<Integer> likes = new HashSet<>();
 }
