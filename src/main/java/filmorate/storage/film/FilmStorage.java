@@ -4,14 +4,14 @@ import filmorate.model.Film;
 
 import java.util.Collection;
 
-interface FilmStorage {
-    public Film add(Film film);
+public interface FilmStorage {
+    Film add(Film film);
 
-    public Film update(Film film);
+    Film update(Film film);
 
-    public Film getById(int id);
+    Film getById(int id);
 
     void delete(int id);
 
-    public Collection<Film> getAll();
+    Collection<Film> getAll();
 }

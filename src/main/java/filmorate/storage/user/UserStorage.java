@@ -4,7 +4,7 @@ import filmorate.model.User;
 
 import java.util.Collection;
 
-interface UserStorage {
+public interface UserStorage {
     User add(User user);
 
     User update(User user);
