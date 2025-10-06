@@ -29,7 +29,7 @@ public class GenreDbStorageTest {
 
         assertThat(genre).isNotNull();
         assertThat(genre.getId()).isEqualTo(1);
-        assertThat(genre.getName()).isEqualTo("Comedy");
+        assertThat(genre.getName()).isEqualTo("Комедия");
     }
 
     @Test
