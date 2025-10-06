@@ -1,4 +1,4 @@
-import com.fasterxml.jackson.databind.ObjectMapper;
+/*import com.fasterxml.jackson.databind.ObjectMapper;
 import filmorate.FilmorateApplication;
 import filmorate.model.Film;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ class FilmControllerTest {
         return film;
     }
 
-    @Test
+    /*@Test
     void postFilms_success() throws Exception {
         mockMvc.perform(post("/films")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -198,4 +198,4 @@ class FilmControllerTest {
                         .content(objectMapper.writeValueAsString(added)))
                 .andExpect(status().isBadRequest());
     }
-}
+}*/

@@ -5,15 +5,17 @@ import filmorate.service.FilmService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/films")
 public class FilmController {
 
-    private final static Logger log = LoggerFactory.getLogger(FilmController.class);
+    private final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final FilmService filmService;
 
     public FilmController(FilmService filmService) {
@@ -33,6 +35,7 @@ public class FilmController {
     }
 
     @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public Film postFilm(@Valid @RequestBody Film film) {
         log.info("Добавление фильма: {}", film);
         return filmService.add(film);
@@ -40,6 +43,9 @@ public class FilmController {
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
+        if (film.getId() == 0) {
+            throw new IllegalArgumentException("ID фильма обязателен для обновления");
+        }
         log.info("Обновление фильма: {}", film);
         return filmService.update(film);
     }
@@ -57,8 +63,8 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
-        log.info("Запрос популярных фильмов (top={})", count);
+    public List<Film> getMostPopular(@RequestParam(defaultValue = "10") int count) {
+        log.info("Запрос {} самых популярных фильмов", count);
         return filmService.getMostPopular(count);
     }
 }
