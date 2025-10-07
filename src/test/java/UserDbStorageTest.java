@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -20,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ActiveProfiles("test")
 class UserDbStorageTest {
 
-    @org.springframework.context.annotation.Configuration
+    @Configuration// без конфигурации все тесты пропускаются
     static class TestConfig {
     }
 

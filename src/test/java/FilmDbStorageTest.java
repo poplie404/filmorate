@@ -1,4 +1,5 @@
 import filmorate.mappers.FilmRowMapper;
+import filmorate.mappers.GenreRowMapper;
 import filmorate.model.Film;
 import filmorate.model.Mpa;
 import filmorate.storage.film.FilmDbStorage;
@@ -6,9 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -16,11 +17,11 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JdbcTest
-@Import({FilmDbStorage.class, FilmRowMapper.class})
+@Import({FilmDbStorage.class, FilmRowMapper.class, GenreRowMapper.class})
 @ActiveProfiles("test")
 class FilmDbStorageTest {
 
-    @org.springframework.context.annotation.Configuration
+    @Configuration// без конфигурации все тесты пропускаются
     static class TestConfig {
     }
 
@@ -36,7 +37,7 @@ class FilmDbStorageTest {
         testFilm.setDescription("A mind-bending thriller by Nolan");
         testFilm.setReleaseDate(LocalDate.of(2010, 7, 16));
         testFilm.setDuration(148);
-        testFilm.setMpa(new Mpa(1, "G")); // в data.sql есть рейтинг с id=1
+        testFilm.setMpa(new Mpa(1, "G"));
     }
 
     @Test

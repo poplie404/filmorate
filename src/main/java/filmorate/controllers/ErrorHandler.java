@@ -24,15 +24,9 @@ public class ErrorHandler {
         return new ErrorResponse(message);
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler({NotFoundException.class, NoSuchElementException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFound(final NotFoundException e) {
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler(NoSuchElementException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNoSuchElement(final NoSuchElementException e) {
+    public ErrorResponse handleNotFound(final RuntimeException e) {
         return new ErrorResponse(e.getMessage());
     }
 

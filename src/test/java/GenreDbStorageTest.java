@@ -16,9 +16,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 public class GenreDbStorageTest {
 
-    @org.springframework.context.annotation.Configuration
-    static class TestConfig {
-    }
 
     @Autowired
     private GenreDbStorage genreDbStorage;

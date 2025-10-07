@@ -12,15 +12,18 @@ import java.util.Collection;
 public class MpaDbStorage implements MpaStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    private static final String SELECT_MPA_BY_ID_SQL = "SELECT * FROM mpa WHERE id = ?";
+
+    private static final String SELECT_ALL_MPA_ORDERED_SQL = "SELECT * FROM mpa ORDER BY id";
+
     public MpaDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
     public Mpa getById(int id) {
-        String sql = "SELECT * FROM mpa WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
+            return jdbcTemplate.queryForObject(SELECT_MPA_BY_ID_SQL, (rs, rowNum) ->
                     new Mpa(rs.getInt("id"), rs.getString("name")), id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("MPA с id " + id + " не найден");
@@ -30,8 +33,7 @@ public class MpaDbStorage implements MpaStorage {
 
     @Override
     public Collection<Mpa> getAll() {
-        String sql = "SELECT * FROM mpa ORDER BY id";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+        return jdbcTemplate.query(SELECT_ALL_MPA_ORDERED_SQL, (rs, rowNum) -> {
             Mpa mpa = new Mpa();
             mpa.setId(rs.getInt("id"));
             mpa.setName(rs.getString("name"));

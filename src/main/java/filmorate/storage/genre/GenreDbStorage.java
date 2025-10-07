@@ -12,14 +12,16 @@ import java.util.List;
 public class GenreDbStorage {
     private final JdbcTemplate jdbcTemplate;
 
+    private static final String SELECT_GENRES_BY_ID_SQL = "SELECT * FROM genres WHERE id = ?";
+    private static final String SELECT_ALL_GENRES_SQL = "SELECT * FROM genres";
+
     public GenreDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     public Genre getById(int id) {
-        String sql = "SELECT * FROM genres WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, (rs, rowNum) ->
+            return jdbcTemplate.queryForObject(SELECT_GENRES_BY_ID_SQL, (rs, rowNum) ->
                     new Genre(rs.getInt("id"), rs.getString("name")), id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Жанр с id " + id + " не найден");
@@ -27,8 +29,7 @@ public class GenreDbStorage {
     }
 
     public List<Genre> getAll() {
-        String sql = "SELECT * FROM genres";
-        return jdbcTemplate.query(sql, (rs, rowNum) ->
+        return jdbcTemplate.query(SELECT_ALL_GENRES_SQL, (rs, rowNum) ->
                 new Genre(rs.getInt("id"), rs.getString("name")));
     }
 }

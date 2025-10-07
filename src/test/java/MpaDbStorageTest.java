@@ -3,6 +3,7 @@ import filmorate.storage.mpa.MpaDbStorage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -15,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 class MpaDbStorageTest {
 
-    @org.springframework.context.annotation.Configuration
+    @Configuration// без конфигурации все тесты пропускаются
     static class TestConfig {
     }
 

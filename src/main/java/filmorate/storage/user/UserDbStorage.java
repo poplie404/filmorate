@@ -24,6 +24,57 @@ public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
     private final UserRowMapper userRowMapper;
 
+    private static final String INSERT_USER_SQL = """
+        INSERT INTO users (email, login, name, birthday)
+        VALUES (?, ?, ?, ?)
+    """;
+
+    private static final String UPDATE_USER_SQL = """
+        UPDATE users
+        SET email = ?, login = ?, name = ?, birthday = ?
+        WHERE id = ?
+    """;
+
+    private static final String DELETE_USER_SQL = """
+        DELETE FROM users WHERE id = ?
+    """;
+
+    private static final String SELECT_USER_BY_ID_SQL = """
+        SELECT * FROM users WHERE id = ?
+    """;
+
+    private static final String SELECT_ALL_USERS_SQL = """
+        SELECT * FROM users
+    """;
+
+    private static final String INSERT_FRIEND_SQL = """
+        INSERT INTO user_friends (user_id, friend_id)
+        VALUES (?, ?)
+    """;
+
+    private static final String DELETE_FRIEND_SQL = """
+        DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?
+    """;
+
+    private static final String SELECT_FRIENDS_SQL = """
+        SELECT u.*
+        FROM users u
+        JOIN user_friends uf ON u.id = uf.friend_id
+        WHERE uf.user_id = ?
+    """;
+
+    private static final String SELECT_COMMON_FRIENDS_SQL = """
+        SELECT u.*
+        FROM users u
+        JOIN user_friends uf1 ON u.id = uf1.friend_id
+        JOIN user_friends uf2 ON u.id = uf2.friend_id
+        WHERE uf1.user_id = ? AND uf2.user_id = ?
+    """;
+
+    private static final String CHECK_USER_EXISTS_SQL = """
+        SELECT COUNT(*) FROM users WHERE id = ?
+    """;
+
     public UserDbStorage(JdbcTemplate jdbcTemplate, UserRowMapper userRowMapper) {
         this.jdbcTemplate = jdbcTemplate;
         this.userRowMapper = userRowMapper;
@@ -31,11 +82,10 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User add(User user) {
-        String sql = "INSERT INTO users (email, login, name, birthday) VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            PreparedStatement ps = connection.prepareStatement(INSERT_USER_SQL, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, user.getEmail());
             ps.setString(2, user.getLogin());
             ps.setString(3, user.getName());
@@ -49,8 +99,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User update(User user) {
-        String sql = "UPDATE users SET email=?, login=?, name=?, birthday=? WHERE id=?";
-        int updated = jdbcTemplate.update(sql,
+        int updated = jdbcTemplate.update(UPDATE_USER_SQL,
                 user.getEmail(),
                 user.getLogin(),
                 user.getName(),
@@ -67,15 +116,13 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void delete(int id) {
-        String sql = "DELETE FROM users WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(DELETE_USER_SQL, id);
     }
 
     @Override
     public User getById(int id) {
-        String sql = "SELECT * FROM users WHERE id = ?";
         try {
-            return jdbcTemplate.queryForObject(sql, userRowMapper, id);
+            return jdbcTemplate.queryForObject(SELECT_USER_BY_ID_SQL, userRowMapper, id);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Пользователь с id " + id + " не найден");
         }
@@ -83,8 +130,7 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public Collection<User> getAll() {
-        String sql = "SELECT * FROM users";
-        return jdbcTemplate.query(sql, userRowMapper);
+        return jdbcTemplate.query(SELECT_ALL_USERS_SQL, userRowMapper);
     }
 
     public void addFriend(int userId, int friendId) {
@@ -93,8 +139,7 @@ public class UserDbStorage implements UserStorage {
         }
 
         try {
-            String sql = "INSERT INTO user_friends (user_id, friend_id) VALUES (?, ?)";
-            jdbcTemplate.update(sql, userId, friendId);
+            jdbcTemplate.update(INSERT_FRIEND_SQL, userId, friendId);
         } catch (DataAccessException e) {
             throw new RuntimeException("Ошибка добавления друга", e);
         }
@@ -105,9 +150,7 @@ public class UserDbStorage implements UserStorage {
             throw new NotFoundException("Один из пользователей не найден");
         }
 
-        String sql = "DELETE FROM user_friends WHERE user_id = ? AND friend_id = ?";
-        jdbcTemplate.update(sql, userId, friendId);
-        // не бросаем NotFoundException, даже если updated == 0
+        jdbcTemplate.update(DELETE_FRIEND_SQL, userId, friendId);
     }
 
     public List<User> getFriends(int userId) {
@@ -115,12 +158,7 @@ public class UserDbStorage implements UserStorage {
             throw new NotFoundException("Пользователь не найден");
         }
 
-        String sql = """
-                SELECT u.* FROM users u
-                JOIN user_friends uf ON u.id = uf.friend_id
-                WHERE uf.user_id = ?
-                """;
-        return jdbcTemplate.query(sql, userRowMapper, userId);
+        return jdbcTemplate.query(SELECT_FRIENDS_SQL, userRowMapper, userId);
     }
 
     public List<User> getCommonFriends(int userId, int otherId) {
@@ -128,23 +166,11 @@ public class UserDbStorage implements UserStorage {
             throw new NotFoundException("Один из пользователей не найден");
         }
 
-        String sql = """
-        SELECT u.*
-        FROM users u
-        JOIN user_friends uf1 ON u.id = uf1.friend_id
-        JOIN user_friends uf2 ON u.id = uf2.friend_id
-        WHERE uf1.user_id = ? AND uf2.user_id = ?
-        """;
-
-        return jdbcTemplate.query(sql, userRowMapper, userId, otherId);
+        return jdbcTemplate.query(SELECT_COMMON_FRIENDS_SQL, userRowMapper, userId, otherId);
     }
 
-
-    public boolean exists(int id) {
-        String sql = "SELECT COUNT(*) FROM users WHERE id = ?";
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, id);
+    public boolean exists(int id) { //Используется в UserService.java
+        Integer count = jdbcTemplate.queryForObject(CHECK_USER_EXISTS_SQL, Integer.class, id);
         return count != null && count > 0;
     }
-
-
 }
