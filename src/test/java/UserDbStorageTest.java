@@ -1,13 +1,11 @@
+import filmorate.FilmorateApplication;
 import filmorate.model.User;
-import filmorate.mappers.UserRowMapper;
 import filmorate.storage.user.UserDbStorage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
@@ -16,14 +14,9 @@ import java.util.Collection;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@JdbcTest
-@Import({UserDbStorage.class, UserRowMapper.class})
+@SpringBootTest(classes = FilmorateApplication.class)
 @ActiveProfiles("test")
 class UserDbStorageTest {
-
-    @Configuration// без конфигурации все тесты пропускаются
-    static class TestConfig {
-    }
 
     @Autowired
     private UserDbStorage userDbStorage;

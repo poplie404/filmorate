@@ -1,24 +1,18 @@
+import filmorate.FilmorateApplication;
 import filmorate.model.Mpa;
 import filmorate.storage.mpa.MpaDbStorage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@JdbcTest
-@Import(MpaDbStorage.class)
+@SpringBootTest(classes = FilmorateApplication.class)
 @ActiveProfiles("test")
 class MpaDbStorageTest {
-
-    @Configuration// без конфигурации все тесты пропускаются
-    static class TestConfig {
-    }
 
     @Autowired
     private MpaDbStorage mpaDbStorage;
