@@ -1,11 +1,11 @@
 package filmorate.storage.film;
 
 import filmorate.model.Film;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.*;
 
-@Component
+@Repository("InMemoryFilmStorage")
 public class InMemoryFilmStorage implements FilmStorage {
 
     private final Map<Integer, Film> films = new HashMap<>();
@@ -32,6 +32,21 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NoSuchElementException("Фильм с id " + id + " не найден");
         }
         films.remove(id);
+    }
+
+    @Override
+    public void addLike(int filmId, int userId) {
+
+    }
+
+    @Override
+    public void removeLike(int filmId, int userId) {
+
+    }
+
+    @Override
+    public List<Film> getMostPopular(int count) {
+        return List.of();
     }
 
     @Override

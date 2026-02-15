@@ -4,7 +4,9 @@ import filmorate.validation.ReleaseDateAfter;
 import lombok.Data;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -24,6 +26,10 @@ public class Film {
 
     @Positive(message = "Продолжительность должна быть положительным числом")
     private int duration;
+
+    private List<Genre> genres = new ArrayList<>();
+
+    private Mpa mpa;
 
     private Set<Integer> likes = new HashSet<>();
 }

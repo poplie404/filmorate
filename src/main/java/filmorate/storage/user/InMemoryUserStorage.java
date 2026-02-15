@@ -1,8 +1,7 @@
 package filmorate.storage.user;
 
-
 import filmorate.model.User;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,7 +9,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 
-@Component
+@Repository("inMemoryUserStorage")
 public class InMemoryUserStorage implements UserStorage {
 
     private final Map<Integer, User> users = new HashMap<>();

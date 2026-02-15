@@ -42,9 +42,8 @@ public class UserController {
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        User updated = userService.update(user);
-        log.info("Пользователь обновлён: {}", updated);
-        return updated;
+        log.info("Обновление пользователя {}", user);
+        return userService.update(user);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
