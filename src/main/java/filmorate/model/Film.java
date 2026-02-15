@@ -4,6 +4,8 @@ import filmorate.validation.ReleaseDateAfter;
 import lombok.Data;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class Film {
@@ -17,9 +19,11 @@ public class Film {
     private String description;
 
     @NotNull(message = "Дата релиза не может быть пустой")
-    @ReleaseDateAfter // кастомная аннотация, проверяющая дату >= 28.12.1895
+    @ReleaseDateAfter
     private LocalDate releaseDate;
 
     @Positive(message = "Продолжительность должна быть положительным числом")
     private int duration;
+
+    private Set<Integer> likes = new HashSet<>();
 }

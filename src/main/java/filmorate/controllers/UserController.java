@@ -1,51 +1,73 @@
 package filmorate.controllers;
 
 import filmorate.model.User;
+import filmorate.service.UserService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.*;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final static Logger log = LoggerFactory.getLogger(UserController.class);
-    private final Map<Integer, User> users = new HashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+    private final UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public Collection<User> getUsers() {
-        log.info("Получен список пользователей: {} шт.", users.size());
-        return users.values();
+        log.info("Получен список пользователей: {} шт.", userService.getAll().size());
+        return userService.getAll();
+    }
+
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable int id) {
+        log.info("Получен пользователь с ID {}", id);
+        return userService.getById(id);
     }
 
     @PostMapping
     public User postUser(@Valid @RequestBody User user) {
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        user.setId(getNextId());
-        users.put(user.getId(), user);
-        log.info("Пользователь добавлен: {}", user);
-        return user;
+        User added = userService.add(user);
+        log.info("Пользователь добавлен: {}", added);
+        return added;
     }
 
     @PutMapping
     public User update(@Valid @RequestBody User user) {
-        if (!users.containsKey(user.getId())) {
-            throw new NoSuchElementException("Пользователь с ID " + user.getId() + " не найден");
-        }
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        users.put(user.getId(), user);
-        log.info("Пользователь обновлён: {}", user);
-        return user;
+        User updated = userService.update(user);
+        log.info("Пользователь обновлён: {}", updated);
+        return updated;
     }
 
-    private int getNextId() {
-        return users.keySet().stream().mapToInt(i -> i).max().orElse(0) + 1;
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.addFriend(id, friendId);
+        log.info("Пользователь {} добавил друга {}", id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable int id, @PathVariable int friendId) {
+        userService.removeFriend(id, friendId);
+        log.info("Пользователь {} удалил друга {}", id, friendId);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getFriends(@PathVariable int id) {
+        log.info("Запрос списка друзей пользователя {}", id);
+        return userService.getFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
+        log.info("Запрос общих друзей между {} и {}", id, otherId);
+        return userService.getCommonFriends(id, otherId);
     }
 }
